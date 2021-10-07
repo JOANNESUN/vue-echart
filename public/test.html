@@ -1,0 +1,1144 @@
+<html><head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" value="7Mj26XM0jqhSRobOsTDw6c88hgN1wf0pcorfuOnL">
+
+    <!-- Page title -->
+    <title>Charts</title>
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <!-- Vendor styles -->
+
+    <link rel="stylesheet" href="http://bheng-charts-demo.herokuapp.com/luna/vendor/bootstrap/css/bootstrap.css">
+
+    <!-- App styles -->
+    <link rel="stylesheet" href="http://bheng-charts-demo.herokuapp.com/luna/styles/pe-icons/pe-icon-7-stroke.css">
+    <link rel="stylesheet" href="http://bheng-charts-demo.herokuapp.com/luna/vendor/animate.css/animate.css">
+    <link rel="stylesheet" href="http://bheng-charts-demo.herokuapp.com/luna/styles/stroke-icons/style.css">
+    <link rel="stylesheet" href="http://bheng-charts-demo.herokuapp.com/luna/styles/pe-icons/helper.css">
+    <link rel="stylesheet" href="http://bheng-charts-demo.herokuapp.com/luna/styles/toastr.min.css">
+    <link rel="stylesheet" href="http://bheng-charts-demo.herokuapp.com/luna/styles/style.css">
+
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/v4-shims.css">
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+
+        h1 {
+            font-size: 15px;
+        }
+
+        .lastSelectedMenu {
+            color: black;
+        }
+
+        .panel {
+            text-align: center !important;
+            /*margin: 0 auto;*/
+            padding-left: 5%;
+        }
+
+
+        .panel .carousel ,.panel .chart {
+            width: 90%;
+        }
+
+
+        .query {
+            width: 70%;
+            height: 40px;
+            border: solid 2px #9B83BC;
+            outline: none;
+            color: #949ba2;
+            border: none;
+            border-radius: 4px;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+            -webkit-transition: none;
+            -o-transition: none;
+            transition: none;
+            background-color: #494b54;
+            font-size: 0.88rem;
+            padding-right: 20px;
+            text-indent: 10px;
+
+            caret-color: #f7af3e;
+        }
+        .query.valid {
+            border: solid 2px ;
+
+            color: white;
+            background-color: transparent;
+            /* border-color: #1bbf89; */
+            border-image: linear-gradient(90deg, rgba(48, 183, 149, 1.000) 30%, rgba(83, 189, 109, 1.000) 55%, rgba(130, 195, 65, 1.000) 100%);
+            border-image-slice: 1;
+
+
+
+        }
+        .query.invalid {
+
+            border: solid 2px ;
+
+            color: white;
+            background-color: transparent;
+            /* border-color: #1bbf89; */
+            border-image: linear-gradient(90deg, rgba(234, 134, 142, 1.000) 30%, rgba(228, 97, 108, 1.000) 55%, rgba(220, 54, 68, 1.000) 100%);
+            border-image-slice: 1;
+
+
+        }
+        .autocomplete {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 20%;
+            color: #f7af3e;
+            font-style: bold;
+        }
+        .autocomplete-body {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            border: 1px solid #f7af3e;
+            background: rgba(245, 167, 32, 0.2)
+
+        }
+        .autocomplete-body li {
+            list-style-type: none;
+            cursor: pointer;
+            padding: 5px 15px;
+        }
+        .autocomplete-body li:hover {
+            background: rgba(245, 167, 32, 0.2)
+        }
+        .autocomplete-body li:active {
+            background: rgba(245, 167, 32, 0.2)
+        }
+
+        #qSubmit {
+            margin-left: 20px;
+        }
+
+
+        @media  screen and (min-width: 768px)
+            .carousel-control .fa-chevron-left, .carousel-control .icon-prev {
+                margin-left: -10px;
+            }
+            @media  screen and (min-width: 768px)
+                .carousel-control .fa-chevron-left, .carousel-control .fa-chevron-right, .carousel-control .icon-next, .carousel-control .icon-prev {
+                    width: 30px;
+                    height: 30px;
+                    margin-top: -10px;
+                    font-size: 30px;
+                }
+                .carousel-control .fa-chevron-left, .carousel-control .icon-prev {
+                    left: -25%;
+                    margin-left: -10px;
+                }
+                .carousel-control .fa-chevron-left, .carousel-control .fa-chevron-right, .carousel-control .icon-next, .carousel-control .icon-prev {
+                    position: absolute;
+                    top: 50%;
+                    z-index: 5;
+                    display: inline-block;
+                    margin-top: -10px;
+                }
+
+
+                .carousel {
+                    position: relative;
+                }
+
+                .carousel-inner {
+                    position: relative;
+                    width: 100%;
+                    overflow: hidden;
+                }
+
+                .carousel-control.left, .carousel-control.right {
+                    background: none;
+                }
+
+                .carousel-control {
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    left: 0;
+                    width: 15%;
+                    font-size: 20px;
+                    color: #fff;
+                    text-align: center;
+                    text-shadow: 0 1px 2px rgba(0,0,0,.6);
+                    background-color: rgba(0,0,0,0);
+                    filter: alpha(opacity=50);
+                    opacity: .5;
+                }
+
+
+    </style>
+</head>
+<body class="  pace-done"><div class="pace  pace-inactive"><div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
+    <div class="pace-progress-inner"></div>
+</div>
+    <div class="pace-activity"></div></div>
+
+<div class="wrapper">
+
+    <!-- Header-->
+    <nav class="navbar navbar-expand-md navbar-default fixed-top">
+        <div class="navbar-header">
+            <div id="mobile-menu">
+                <div class="left-nav-toggle">
+                    <a href="#">
+                        <i class="stroke-hamburgermenu"></i>
+                    </a>
+                </div>
+            </div>
+            <a class="navbar-brand" href="#">
+
+
+            </a>
+        </div>
+</div>
+</nav>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="view-header">
+                    <div class="header-icon">
+                        <i class="fa fa-connectdevelop"></i>
+                    </div>
+                    <div class="header-title">
+
+                        <div class="row">
+
+                            <div class="col-lg-3">
+
+                                <h3 class="m-b-xs">Store Level Traffic</h3>
+
+                                <span > Current Interval:
+									<span class="lastSelected"></span>
+								</span>
+
+
+                            </div>
+                            <div class="col-lg-6">
+
+
+                                <div id="input-group" class="input-group">
+
+                                    <input type="text" id="query" class="query" onkeyup="handleChangeQuery(this.value)" autocomplete="off" placeholder="cpeMac = 112233445566 && deviceMac == AABBCC112233 && vlanId == 100">
+
+                                    <button class="btn btn-success" id="qSubmit" class="pull-right" onclick="submit();graphAll(interval);">submit</button>
+
+
+                                    <div id="autocomplete" class="autocomplete"></div>
+
+
+                                </div>
+
+
+                            </div>
+                            <div class="col-lg-3">
+
+                                <small class="lastSelectedMenu">
+
+                                    <select name="last" class="float-right">
+                                        <option id="default" value="default">Select Interval</option>
+                                        <option value="day">Day</option>
+                                        <option value="week">Week</option>
+                                        <option value="month">Month</option>
+                                        <option value="year">Year</option>
+                                    </select>
+                                </small>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <hr>
+
+            </div>
+        </div>
+
+
+        <div class="row">
+
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+
+                <div class="panel panel-filled">
+                    <div class="panel-body">
+                        <div class="panel">
+
+                            <h1>User Traffic</h1>
+
+
+                            <div id="chart1Carousel" class="carousel slide" data-ride="carousel">
+
+                                <!-- Wrapper for slides -->
+                                <div class="carousel-inner">
+                                    <div class="item active">
+                                        <canvas width="200" height="100" id="chart1"></canvas>
+                                    </div>
+                                </div>
+
+                                <!-- Left and right controls -->
+                                <a class="left carousel-control" href="#chart1Carousel" data-slide="prev">
+                                    <span class="fa fa-chevron-left"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="right carousel-control" href="#chart1Carousel" data-slide="next">
+                                    <span class="fa fa-chevron-right"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+
+                <div class="panel panel-filled">
+                    <div class="panel-body">
+                        <div class="panel">
+
+                            <h1>Passersby Vs. Visitors</h1>
+
+                            <div id="chart2Carousel" class="carousel slide" data-ride="carousel">
+
+                                <!-- Wrapper for slides -->
+                                <div class="carousel-inner">
+                                    <div class="item active">
+                                        <canvas width="200" height="100" id="chart2"></canvas>
+                                    </div>
+                                </div>
+
+                                <!-- Left and right controls -->
+                                <a class="left carousel-control" href="#chart2Carousel" data-slide="prev">
+                                    <span class="fa fa-chevron-left"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="right carousel-control" href="#chart2Carousel" data-slide="next">
+                                    <span class="fa fa-chevron-right"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+
+        <div class="row">
+
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+
+                <div class="panel panel-filled">
+                    <div class="panel-body">
+                        <div class="panel">
+                            <div class="chart">
+                                <h1>Top Categories</h1>
+                                <canvas width="200" height="100" id="chart3"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+
+                <div class="panel panel-filled">
+                    <div class="panel-body">
+                        <div class="panel">
+                            <div class="chart">
+                                <h1>Top Sites</h1>
+                                <canvas width="200" height="100" id="chart4"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="view-header">
+                    <div class="header-icon">
+                        <i class="fa fa-wifi"></i>
+                    </div>
+                    <div class="header-title">
+                        <h3 class="m-b-xs">WiFi Usage</h3>
+                        <small>
+                            This section will list all our WiFi charts
+                        </small>
+                    </div>
+                </div>
+
+                <hr>
+
+            </div>
+        </div>
+
+        <div class="row">
+
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+                <div class="panel panel-filled">
+                    <div class="panel-body">
+                        <div class="panel">
+
+                            <h1>CPE Bandwidth Usage</h1>
+
+                            <div id="chart5Carousel" class="carousel slide" data-ride="carousel">
+
+                                <!-- Wrapper for slides -->
+                                <div class="carousel-inner">
+                                    <div class="item active">
+                                        <canvas width="200" height="100" id="chart5"></canvas>
+                                    </div>
+                                </div>
+
+                                <!-- Left and right controls -->
+                                <a class="left carousel-control" href="#chart5Carousel" data-slide="prev">
+                                    <span class="fa fa-chevron-left"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="right carousel-control" href="#chart5Carousel" data-slide="next">
+                                    <span class="fa fa-chevron-right"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+                <div class="panel panel-filled">
+                    <div class="panel-body">
+                        <div class="panel">
+                            <div class="chart">
+                                <h1>Usage Duration</h1>
+                                <canvas width="200" height="100" id="chart6"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+                <div class="panel panel-filled">
+                    <div class="panel-body">
+                        <div class="panel">
+                            <div class="chart">
+                                <h1>Device Bandwidth Usage</h1>
+                                <canvas width="200" height="100" id="chart7"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+                <div class="panel panel-filled">
+                    <div class="panel-body">
+                        <div class="panel">
+                            <div class="chart">
+                                <h1>Device Type - by browser</h1>
+                                <canvas width="200" height="100" id="chart8"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+
+    </div>
+</section>
+
+
+<!-- Vendor scripts -->
+<script src="/luna/vendor/pacejs/pace.min.js"></script>
+<script src="/luna/vendor/jquery/dist/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script src="/luna/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+<script src="https://www.chartjs.org/dist/2.9.3/Chart.min.js"></script>
+
+<script type="text/javascript">
+
+    function formatBytes(bytes) {
+        var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        if (bytes == 0) return '0 Byte';
+        var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+        return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+    };
+
+    function hexToRgb(hex, opacity=1) {
+
+        var h=hex.replace('#', '');
+        h =  h.match(new RegExp('(.{'+h.length/3+'})', 'g'));
+        for(var i=0; i<h.length; i++)
+            h[i] = parseInt(h[i].length==1? h[i]+h[i]:h[i], 16);
+        if (typeof opacity != 'undefined')  h.push(opacity);
+        return 'rgba('+h.join(',')+')';
+
+    }
+
+    var red           = '#F44336';
+    var pink          = '#E91E63';
+    var purple        = '#9C27B0';
+    var deeppurple    = '#673AB7';
+    var indigo        = '#3F51B5';
+    var blue          = '#2196F3';
+    var lightblue     = '#03A9F4';
+    var cyan          = '#00BCD4';
+    var teal          = '#009688';
+    var green         = '#4CAF50';
+    var lightgreen    = '#8BC34A';
+    var lime          = '#CDDC39';
+    var yellow        = '#FFEB3B';
+    var amber         = '#FFC107';
+    var orange        = '#FF9800';
+    var deeporange    = '#FF5722';
+    var brown         = '#795548';
+    var gray          = '#9E9E9E';
+    var bluegray      = '#607D8B';
+
+    var getLiveChartData     = null;
+
+    // var colors = [red, pink, purple, deeppurple, indigo, blue, lightblue, cyan, teal, green, lightgreen, lime, yellow, amber, orange, deeporange, brown, gray, bluegray];
+
+    var colors = [pink, green, lightblue, deeppurple, yellow, teal, cyan, teal, green, lightgreen, lime, yellow, amber, orange, deeporange, brown, gray, bluegray];
+
+
+    neonBgColors = [];
+    neonBgBorders = [];
+    for(var i=0; i<colors.length; i++){
+        neonBgColors.push(hexToRgb(colors[i], opacity=.3));
+        neonBgBorders.push(hexToRgb(colors[i], opacity=1));
+    }
+
+
+    var interval  = 'day';
+    window.charts = [];
+
+    function r100() {
+        return Math.round(Math.random() * 100);
+    }
+
+    function randomData() {
+        return {
+            "0":[r100(),r100(),r100(),r100(),r100(),r100(),r100(),r100()],
+            "1":[r100(),r100(),r100(),r100(),r100(),r100(),r100(),r100()],
+            "2":[r100(),r100(),r100(),r100(),r100(),r100(),r100(),r100()],
+            "3":[r100(),r100(),r100(),r100(),r100(),r100(),r100(),r100()],
+            "4":[r100(),r100(),r100(),r100(),r100(),r100(),r100(),r100()],
+            "labels":["12 AM","1 AM","2 AM","3 AM","4 AM","5 AM","6 AM","7 AM","8 AM","9 AM","10 AM","11 AM","12 PM","1 PM","2 PM","3 PM","4 PM","5 PM","6 PM","7 PM","8 PM","9 PM","10 PM","11 PM"]};
+    }
+
+    function drawChart(configs,interval) {
+
+        if(configs.duration == undefined){
+            configs.duration = 0;
+        }
+
+        var data           = {};
+        data.intervalType  = interval;
+        data.duration      = configs.duration;
+        data.objectAmmount = '5';
+
+        (function(response){
+
+
+
+            // 🚀
+            console.log('response');
+            console.log(response);
+
+            if(configs.datasets == false){
+                configs.datasets = [{
+                    data: configs.data,
+                    borderWidth:1,
+                    hoverBorderWidth:2,
+                    hoverBorderColor:'#fff',
+                    backgroundColor: neonBgColors,
+                    borderColor: neonBgBorders
+
+                }];
+            }else {
+
+
+                var datasets = [];
+                for (let i = 0; i < configs.objects.length; i++) {
+
+                    // console.log(i);
+
+                    datasets[i] = {};
+                    datasets[i].borderWidth      = 1;
+                    datasets[i].hoverBorderWidth = 2;
+                    datasets[i].hoverBorderColor = '#fff';
+                    datasets[i].backgroundColor  = hexToRgb(colors[i], opacity=.3);
+                    datasets[i].borderColor      = hexToRgb(colors[i], opacity=1);
+                    datasets[i].data             = response[i];
+                    datasets[i].label            = configs.objects[i];
+
+                }
+
+                configs.datasets = datasets;
+                configs.labels   = response['labels'];
+
+                // debugger;
+
+            }
+
+            var options = {
+                type: configs.type, // bar, horizontalBar, pie, line, doughnut, radar, polarArea
+                data: {
+                    labels: configs.labels,
+                    datasets: configs.datasets
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            display: true,
+                            ticks: {
+                                stepSize: 10
+                            }
+                        }]
+                    },
+
+                    title: {
+                        display: false,
+                        // text: configs.selectorId + ' = ' + configs.title,
+                        text: [ configs.title ],
+                        fontColor: "white",
+                        fontSize: 20,
+                    },
+
+                    subtitle: {
+                        text: 'This text has <b>bold</b>, <i>italic</i>, <span style="color: red">coloured</span>, <a href="http://example.com">linked</a> and <br/>line-broken text.'
+                    },
+
+
+                    legend: {
+                        display: configs.legend,
+                        position: 'bottom',
+                        labels: {
+                            fontColor: "white",
+                            fontSize: 12
+                        }
+                    },
+
+                }
+            };
+
+
+            if(window[configs.selectorId] && window[configs.selectorId] !== null){
+                if (typeof window[configs.selectorId].destroy === 'function') {
+                    window[configs.selectorId].destroy();
+                }
+                delete window[configs.selectorId];
+            }
+
+            // console.log(window);
+
+            var ctx = document.getElementById(configs.selectorId).getContext('2d');
+            window[configs.selectorId] = new Chart(ctx, options);
+            // window[configs.selectorId].destroy();
+
+
+            // ctx.canvas.parentNode.style.width = '400px';
+            // ctx.canvas.parentNode.style.height = '200px';
+            // window[configs.selectorId].update();
+            // window[configs.selectorId].update();
+            // charts[configs.selectorId] = new Chart(ctx, options);
+
+        })(randomData());
+
+    }
+
+    // bar, horizontalBar, pie, line, doughnut, radar, polarArea
+
+    function graphAll(interval) {
+
+
+        var configs        = {};
+        configs.title      = 'User Traffic';
+        configs.selectorId = 'chart1';
+        configs.type       = 'line';
+        configs.legend     = true;
+        configs.objects    = ['Mexico','Brazil','USA'];
+        configs.datasets   = true;
+
+        drawChart(configs, interval);
+
+        // ----------------------------------------------------------------------------------------------------
+
+
+        var configs        = {};
+        configs.title      = 'Passersby Vs. Visitors';
+        configs.selectorId = 'chart2';
+        configs.type       = 'bar';
+        configs.legend     = true;
+        configs.objects    = ['Passersby','Visitors'];
+        configs.datasets   = true;
+
+
+        drawChart(configs, interval);
+
+        // ----------------------------------------------------------------------------------------------------
+
+        var configs        = {};
+        configs.title      = 'Top Categories';
+        configs.selectorId = 'chart3';
+        configs.type       = 'horizontalBar';
+        configs.legend     = false;
+        configs.labels     = ['Social Networks','Government','Travel','News','Sport','Search','Business','Chat','Educational','Food'];
+        configs.data       = [100,90,82,77, 66, 55, 43,33,22,11, 2];
+        configs.datasets   = false;
+
+        drawChart(configs, interval);
+
+        // ----------------------------------------------------------------------------------------------------
+
+        var configs        = {};
+        configs.title      = 'Top Sites';
+        configs.selectorId = 'chart4';
+        configs.type       = 'doughnut';
+        configs.legend     = true;
+        configs.labels     = ['Google.com','Facebook.com','Youtube.com','Netflix.com','others'];
+        configs.data       = [5,4,3,2,1];
+        configs.datasets   = false;
+
+        drawChart(configs, interval);
+
+        // ----------------------------------------------------------------------------------------------------
+
+        var configs        = {};
+        configs.title      = 'CPE Bandwidth Usage';
+        configs.selectorId = 'chart5';
+        configs.type       = 'bar';
+        configs.legend     = true;
+        configs.labels     = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        configs.objects    = ['Burlington','Boston','Cambridge','Andover'];
+        configs.datasets   = true;
+
+
+        drawChart(configs, interval);
+
+        // ----------------------------------------------------------------------------------------------------
+
+        var configs        = {};
+        configs.title      = 'Usage Duration';
+        configs.selectorId = 'chart6';
+        configs.type       = 'polarArea';
+        configs.legend     = true;
+        configs.labels     = ['< 2 min', '2-5 min','5-15 min','15-30 min','30-60 min','> 1 hr'];
+        configs.data       = [23,9,45,22,45,60];
+        configs.datasets   = false;
+
+        drawChart(configs, interval);
+
+        // ----------------------------------------------------------------------------------------------------
+
+        var configs        = {};
+        configs.title      = 'Device Bandwidth Usage';
+        configs.selectorId = 'chart7';
+        configs.type       = 'polarArea';
+        configs.legend     = true;
+        configs.labels     = ['iPhone 11 Pro','iPad Pro', 'MacBook Pro','Nest','Hue',];
+        configs.data       = [53,74,85,25,13];
+        configs.datasets   = false;
+
+        drawChart(configs, interval);
+
+        // ----------------------------------------------------------------------------------------------------
+
+        var configs        = {};
+        configs.title      = 'Device Type - by browser';
+        configs.selectorId = 'chart8';
+        configs.type       = 'pie';
+        configs.legend     = true;
+        configs.labels     = ['MacOS','Windows','iOS','Android','Linux','Others'];
+        configs.data       = [3,4,5,6,7,8];
+        configs.datasets   = false;
+
+        drawChart(configs, interval);
+
+        console.log(charts);
+
+
+
+        // ----------------------------------------------------------------------------------------------------
+
+
+        // bar, horizontalBar, pie, line, doughnut, radar, polarArea
+
+    }
+
+    $("select[name='last']").val('default');
+    $(".lastSelected").text(interval);
+
+    $("select[name='last']").on('change', function() {
+
+        var selectedVal =$(this).val();
+
+        interval = selectedVal;
+        graphAll(interval);
+
+        console.log($(this).closest('canvas'));
+        var $canvas = $(this).closest('.lastSelectedMenu').next('canvas');
+        console.log($canvas.prop('id'));
+
+
+        $(".lastSelected").text(selectedVal);
+        console.log(selectedVal);
+
+        $("select[name='last']").val('default');
+        $(".lastSelected")
+            .animate({
+                color: "#4BB7E8"
+            }, 500)
+            .animate({
+                color: "#FFF"
+            }, 200)
+            .animate({
+                color: "#4BB7E8"
+            }, 500)
+            .fadeIn(200);
+
+
+    });
+
+    graphAll(interval);
+
+
+    // cleanup carousel
+    if(interval == 'day'){
+        $('.right.carousel-control').hide();
+    }
+
+
+    var duration = 0;
+
+
+    $(document).on('click', '.carousel-control', function () {
+
+        var direction = $(this).attr('class').replace('carousel-control','');
+        //console.log($(this).prev('.carousel-inner').find('canvas').attr('id'));
+
+        var chartId = $(this).closest('.carousel').find('canvas').attr('id')
+        console.log('%c chartId = ' + chartId, "color: green;");
+
+        //Reset chart data
+        $('#'  + chartId + 'Carousel canvas').remove();
+        $('#'  + chartId + 'Carousel .carousel-inner').prepend('<div class="item active"> <canvas width="200" height="100" id="'+chartId+'"></canvas> </div>');
+
+        function renderCarouselCharts(chartId) {
+
+            switch(chartId) {
+
+                case 'chart1':
+                    var configs        = {};
+                    configs.duration   = duration;
+                    configs.title      = 'User Traffic';
+                    configs.selectorId = 'chart1';
+                    configs.type       = 'line';
+                    configs.legend     = true;
+                    configs.objects    = ['Mexico','Brazil','USA'];
+                    configs.datasets   = true;
+                    drawChart(configs, interval);
+                    break;
+
+                case 'chart2':
+                    var configs        = {};
+                    configs.title      = 'Passersby Vs. Visitors';
+                    configs.selectorId = 'chart2';
+                    configs.type       = 'bar';
+                    configs.legend     = true;
+                    configs.objects    = ['Passersby','Visitors'];
+                    configs.datasets   = true;
+                    drawChart(configs, interval);
+                    break;
+
+                case 'chart5':
+
+                    var configs        = {};
+                    configs.title      = 'CPE Bandwidth Usage';
+                    configs.selectorId = 'chart5';
+                    configs.type       = 'bar';
+                    configs.legend     = true;
+                    configs.labels     = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+                    configs.objects    = ['Burlington','Boston','Cambridge','Andover'];
+                    configs.datasets   = true;
+
+
+                    drawChart(configs, interval);
+
+                default:
+                // code block
+            }
+
+        }
+
+        if(interval == 'day' || interval == 'week' || interval == 'month' || interval == 'year'){
+
+            $('#'  + chartId + 'Carousel .right.carousel-control').show();
+
+            if (direction.indexOf('left') !== -1) {
+                duration--;
+            } else {
+                duration++;
+            }
+
+            renderCarouselCharts(chartId)
+
+        }
+
+    });
+
+
+</script>
+
+<script type="text/javascript">
+
+
+    $('#qSubmit').fadeOut();
+
+    var typeA = ["deviceMac", "cpeMac", "vlanId"];
+    var typeB = ["&&", "AND"];
+    var typeC = ["=="];
+    var autocompleteList = ["deviceMac", "cpeMac", "vlanId", "&&", "AND", "=="];
+
+    var prevQuery = '';
+    var autoPosition = null;
+    var prospectsList = [];
+
+    function handleChangeQuery(query) {
+        if(query.length !== prevQuery.length) {
+            var queryValid = validateQuery(query);
+
+            document.getElementById('query').classList.remove('valid');
+            document.getElementById('query').classList.remove('invalid');
+            if(queryValid) {
+                document.getElementById('query').classList.add('valid');
+
+                //show search
+
+                $('#qSubmit').fadeIn();
+
+
+            } else {
+                document.getElementById('query').classList.add('invalid');
+
+                //hide search
+
+                $('#qSubmit').fadeOut();
+
+            }
+
+            prospectsList = [];
+            var autocomplete = document.getElementById('autocomplete');
+            var { diff, position } = getDifference(prevQuery, query);
+
+            for(var i=0; i<autocompleteList.length; i++) {
+                if(diff === autocompleteList[i].slice(0, diff.length)) {
+                    var querys = query.split(" ");
+                    var already = false
+                    if(typeA.includes(autocompleteList[i])) {
+                        for(var j=0; j<querys.length; j++) {
+                            if(autocompleteList[i] === querys[j]) {
+                                already = true;
+                            }
+                        }
+                    }
+
+                    if(!already) prospectsList.push(autocompleteList[i]);
+                }
+            }
+
+            var isValid = true;
+            if(position !== 0 && query[position - 1] !== ' ') isValid = false;
+            if(query.length !== position + diff.length && query[position + diff.length] !== ' ') isValid = false;
+
+            if(isValid && prospectsList.length > 0) {
+                autoPosition = position;
+
+                autocomplete.innerHTML = "<ul id='autocomplete-body' class='autocomplete-body'></ul>";
+                var autocompleteBody = document.getElementById('autocomplete-body');
+
+                for(var j=0; j<prospectsList.length; j++) {
+                    autocompleteBody.innerHTML += "<li onclick='handleClickItem("+j+")'>"+ prospectsList[j] +"</li>";
+                }
+            } else {
+                prevQuery = query;
+                autocomplete.innerHTML = '';
+                autoPosition = null;
+                prospectsList = [];
+            }
+        }
+    }
+
+    function handleClickItem(index) {
+        var item = prospectsList[index];
+        if(typeA.includes(prospectsList[index])) {
+            item = item+" ==";
+        }
+        item = item+" ";
+
+        var output = [prevQuery.slice(0, autoPosition), item, prevQuery.slice(autoPosition + 1)].join('');
+        document.getElementById('query').value = output;
+        prevQuery = output;
+        autocomplete.innerHTML = '';
+        autoPosition = null;
+        prospectsList = [];
+    }
+
+    function validateQuery(query) {
+        var isValid = true;
+
+        if(query.length > 0) {
+            query = query.trim();
+            query = query.replace(/\s\s+/g, ' ');
+            var querys = query.split(" ");
+
+            var i = 0;
+
+            var allQuerys = [];
+            for(var j=0; j<querys.length; j++) {
+                if(typeA.includes(querys[j])) {
+                    if(allQuerys.includes(querys[j])) {
+                        isValid = false;
+                        break;
+                    } else {
+                        allQuerys.push(querys[j]);
+                    }
+                }
+            }
+
+            if(isValid) {
+                while(i < querys.length) {
+                    if(typeA.includes(querys[i]) && querys[i+1] == typeC[0] && querys[i+2]) {
+                        if(querys[i] == typeA[0] || querys[i] == typeA[1]) {
+                            if(querys[i+2].length !== 12) {
+                                isValid = false;
+                                break;
+                            }
+                        } else if(querys[i] == typeA[2]) {
+                            if(Number(querys[i+2]) !== parseInt(Number(querys[i+2]), 10) || querys[i+2] < 1 || querys[i+2] > 4094) {
+                                isValid = false;
+                                break;
+                            }
+                        }
+
+                        if(querys[i+3]) {
+                            if(typeB.includes(querys[i+3]) && i + 4 < querys.length) {
+                            } else {
+                                isValid = false;
+                                break;
+                            }
+                        }
+                    } else {
+                        isValid = false;
+                        break;
+                    }
+
+                    i += 4;
+                }
+            }
+        }
+
+        return isValid
+    }
+
+    function getDifference(a, b) {
+        var i = 0;
+        var j = 0;
+        var diff = "";
+        var position = null;
+
+        while (j < b.length)
+        {
+            if (a[i] != b[j] || i == a.length) {
+                diff += b[j];
+                if(position === null) {
+                    position = j;
+                }
+            } else {
+                i++;
+            }
+
+            j++;
+        }
+        return { diff, position };
+    }
+
+    function submit() {
+        var query = document.getElementById('query').value;
+        var queryValid = validateQuery(query);
+
+        if(queryValid && query.length > 0) {
+            query = query.trim();
+            query = query.replace(/\s\s+/g, ' ');
+            var querys = query.split(" ");
+
+            var i = 0;
+            var result = {};
+
+            while(i < querys.length) {
+                if(typeA.includes(querys[i])) {
+                    result[querys[i]] = querys[i+2];
+                }
+                i += 4
+            }
+
+            console.log(result)
+        }
+    }
+</script>
+
+</body>
+</html>

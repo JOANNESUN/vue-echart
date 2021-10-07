@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>实时数据查看</title>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+    <!-- 引入公用部分 -->
+    <script th:replace="common/head::static"></script>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+
+            <div class="layui-card">
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+                    <legend>
+                        <span th:text="${enterpriseName}"></span>
+                        /
+                        <span th:text="${pointName}"></span>
+                    </legend>
+
+                </fieldset>
+                <!--   <div class="layui-inline">
+                       因子编码：
+                       <div class="layui-input-inline">
+                           <select name="monitorDataSearchOnline" id="monitorDataSearchOnline"
+                                   class="input-select">
+                               <option value="" selected>请选择是否在线</option>
+                               <option th:each="sysDivisor:${sysDivisorSearch}" th:value="${sysDivisor.code}"
+                                       th:text="${sysDivisor.name}"></option>
+                           </select>
+                       </div>
+                   </div>
+               -->
+                <div class="layui-form">
+                    <div class="layui-inline">
+                        时间类型：
+                        <div class="layui-input-inline">
+                            <select name="rtdDataSearchTimeType" id="rtdDataSearchTimeType"
+                                    class="input-select">
+                                <option value="">请选择时间类型</option>
+                                <option value="d2011" selected>实时数据</option>
+                                <option value="d2051">分钟数据</option>
+                                <option value="d2061">小时数据</option>
+                                <option value="d2031">日数据</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+
+                        <div class="layui-input-inline">
+                            <!--时间范围选择-->
+                            开始时间：
+                            <div class="layui-inline" style="width:165px;">
+                                <input type="text" class="layui-input" lay-filter="startTime" lay-search=""
+                                       id="rtdDataSearchStartTime" name="rtdDataSearchStartTime"/>
+                            </div>
+                            结束时间：
+                            <div class="layui-inline" style="width:165px;">
+                                <input type="text" class="layui-input" lay-filter="endTime" lay-search=""
+                                       id="rtdDataSearchEndTime" name="rtdDataSearchEndTime"/>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="layui-btn" onclick="monitorDataSearchBtn();"><i
+                            class="layui-icon layui-icon-search"></i>数据
+                    </button>
+                    <button class="layui-btn" onclick="monitorDataSearchEchartBtn();">
+                        <i class="layui-icon layui-icon-export"></i>图表
+                    </button>
+                    <button class="layui-btn"  id="btn" >
+                        <i class="layui-icon layui-icon-export"></i>导出
+                    </button>
+                </div>
+
+            </div>
+            <div id="monitorDataSearchDiv">
+                <table class="layui-table" lay-filter="monitorDataSearchTable"
+                       lay-data="{height:'full-230',cellMinWidth: 80 }">
+                    <thead id="monitorDataSearchthead">
+
+
+                    </thead>
+                    <tbody id="monitorDataSearchtbody">
+
+                    </tbody>
+                </table>
+                <div id="monitorDataSearchPage"></div>
+
+            </div>
+            <div id="monitorDataSearchEchartDiv" style="width: 100%;height: 400px"></div>
+
+        </div>
+    </div>
+</div>
+</div>
+<!--导出文件-->
+<a href="" id="monitorDataExportIndexA" style="font-size: larger; font-weight: bold; color: blue;"></a>
+
+<!--站点隐藏ID-->
+<input type="hidden" id="monitorDataSearchHiddenPointId" name="monitorDataSearchHiddenPointId"
+       th:value="${pointId}"/>
+
+<!-- 分页必需 -->
+<input type="hidden" id="monitorDataSearchHiddenCpage" name="monitorDataSearchHiddenCpage" value="1"/>
+<input type="hidden" id="monitorDataSearchHiddenTotalNum" name="monitorDataSearchHiddenTotalNum"
+       value="-1"/>
+
+<script>
+    layui.config({
+        base: 'common/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['table', 'laypage', 'layer', 'index', 'form', 'laydate','echarts'], function () {
+        var laypage = layui.laypage
+            , table = layui.table
+            , $ = layui.$
+            , admin = layui.admin
+            , element = layui.element
+            , layer = layui.layer
+            , laydate = layui.laydate
+            , form = layui.form;
+
+        //初始化分页
+        laypage.render({
+            elem: 'monitorDataSearchPage'
+            , count: 0
+            , limit: 15
+            , curr: 1
+            , layout: ['prev', 'page', 'next', 'count', 'skip']
+        });
+
+
+        //获取当前时间
+        var myDate = new Date;
+        //当前年
+        var yearStart = myDate.getFullYear();
+        //当前月
+        var monthStart = myDate.getMonth() + 1;
+        if (monthStart.toString().length == "1") {
+            monthStart = '0' + monthStart;
+        }
+        //当前日
+        var dayStart = myDate.getDate();
+        if (dayStart.toString().length == "1") {
+            dayStart = '0' + dayStart;
+        }
+        //开始时间
+        var strStartTime = yearStart + "-" + monthStart + "-" + dayStart;
+
+        //时间加一天
+        myDate.setDate(myDate.getDate() + 1);
+        //时间加一天后年
+        var yearEnd = myDate.getFullYear();
+        //时间加一天后月
+        var monthEnd = myDate.getMonth() + 1;
+        if (monthEnd.toString().length == "1") {
+            monthEnd = '0' + monthEnd;
+        }
+        //时间加一天后日
+        var dayEnd = myDate.getDate();
+        if (dayEnd.toString().length == "1") {
+            dayEnd = '0' + dayEnd;
+        }
+        //结束时间
+        var strEndTime = yearEnd + "-" + monthEnd + "-" + dayEnd;
+
+        //开始时间 初始化当前日期
+        $("#rtdDataSearchStartTime").val(strStartTime);
+
+        //结束时间 初始化当前日期
+        $("#rtdDataSearchEndTime").val(strStartTime);
+
+
+        //日期选择器初始化 开始时间
+        laydate.render({
+            elem: '#rtdDataSearchStartTime' //指定元素
+            , type: 'date'
+            , format: 'yyyy-MM-dd' //可任意组合
+            // , min:strStartTime
+            , max: strEndTime
+        });
+
+        //日期选择器初始化 结束时间
+        laydate.render({
+            elem: '#rtdDataSearchEndTime' //指定元素
+            , type: 'date'
+            , format: 'yyyy-MM-dd' //可任意组合
+            , max: strEndTime
+        });
+        //表单重新渲染
+        form.render();
+
+        //excel文件下载
+        var btn = document.getElementById('btn');
+        console.log(btn);
+        btn.onclick = function () {
+
+            var pointId = $("#monitorDataSearchHiddenPointId").val();
+            var timeType = $("#rtdDataSearchTimeType").val();
+            console.log("======aaa=========="+pointId);
+            //开始时间
+            var indexStart = $("#rtdDataSearchStartTime").val();
+            //结束时间
+            var indexEnd = $("#rtdDataSearchEndTime").val();
+            var url = "monitorDataExportJsonIndex?pointId="+pointId+"&startTime="+indexStart+"&endTime="+indexEnd+"&timeType="+timeType;
+
+            const xhr = new XMLHttpRequest();
+             xhr.open('get', url);
+            xhr.send();
+            xhr.responseType = 'blob'; //设置请求回来的数据为blob方式
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    // 数据在 this.response 保存
+                    // excel 的 MIME 格式为 application/vnd.ms-excel
+                    var blob = new Blob([this.response], {
+                        type: "application/vnd.ms-excel"
+                    });
+                    // 创建a链接 href链接地址 download为下载下来后文件的名称
+                    var aa = document.createElement('a');
+                    aa.href = URL.createObjectURL(blob);
+                    aa.innerHTML = 'a链接';
+                    aa.download = 'aa.xls';
+                    aa.style.display = 'none'; //隐藏a标签 直接调用a标签的点击事件
+                    document.body.appendChild(aa);
+                    aa.click();
+                }
+            }
+        };
+       /*  $("#monitorDataExportIndex").click(function () {
+
+
+
+            var indexs = layer.load(3);
+            var pointId = $("#monitorDataSearchHiddenPointId").val();
+            console.log("======aaa=========="+pointId);
+            //开始时间
+            var indexStart = $("#rtdDataSearchStartTime").val();
+            //结束时间
+            var indexEnd = $("#rtdDataSearchEndTime").val();
+
+            //要请求的Url和携带的参数
+            var url = "monitorDataExportJsonIndex?pointId= " + pointId + "&startTime=" + indexStart + "&endTime=" + indexStart;
+            var xhr = new XMLHttpRequest();
+            //设置响应类型为blob类型
+            xhr.responseType = "blob";
+            xhr.onload = function () {
+                console.log("status"+this.status)
+                if (this.status == "200") {
+                    //获取响应文件流　　
+                    var blob = this.response;
+
+                    var aElem = document.getElementById("monitorDataExportIndexA");
+                    //将文件流保存到a标签
+                    aElem.href = window.URL.createObjectURL(blob);
+                    aElem.download = "heartStatistic_" + formatDateTime(new Date()) + ".xls";
+                    aElem.onload = function (e) {
+                        window.URL.revokeObjectURL(aElem.href);
+                    };
+                    layer.close(indexs);
+                    layer.confirm('文件已导出, 立即下载？', function (index) {
+                        aElem.click();
+                        layer.close(index);
+                    });
+
+                }
+            }
+
+            xhr.open("post", url, true);
+            xhr.send();
+        })*/
+
+
+    });
+    //echart检索
+    function monitorDataSearchEchartBtn() {
+
+
+        //站点id
+        var pointId = $("#monitorDataSearchHiddenPointId").val();
+        //时间类型
+        var timeType = $("#rtdDataSearchTimeType").val();
+
+        //开始时间
+        var startTime = $("#rtdDataSearchStartTime").val();
+        //结束时间
+        var endTime = $("#rtdDataSearchEndTime").val();
+
+        //条数
+        var limit=500;
+        monitorDataEchartSearch(pointId, timeType, startTime, endTime,limit);
+
+        $("#monitorDataSearchDiv").attr("style", "display:none;");//隐藏div
+
+    }
+
+
+    //检索echarts
+    function monitorDataEchartSearch(pointId, timeType, startTime, endTime,limit) {
+        var myTemperatureChart = echarts.init(document
+            .getElementById('monitorDataSearchEchartDiv'));
+        console.log(myTemperatureChart)
+        // 显示标题，图例和空的坐标轴
+        myTemperatureChart.setOption({
+            title: {
+                text: '数据图表'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['因子1', '因子2']
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    //辅助线开关
+                    mark: {
+                        show: true
+                    },
+                    dataView: {
+                        show: true,
+                        readOnly: false
+                    },
+                    magicType: {
+                        show: true,
+                        type: ['line', 'bar']
+                    },
+                    restore: {
+                        show: true
+                    },
+                    saveAsImage: {
+                        show: true
+                    }
+                }
+            },
+            calculable: true,
+            // 设置可缩放
+            dataZoom: [{
+                id: 'dataZoomX',
+                type: 'slider',
+                xAxisIndex: [0],
+                filterMode: 'filter'
+            }, {
+                id: 'dataZoomY',
+                type: 'slider',
+                yAxisIndex: [0],
+                filterMode: 'empty'
+            }],
+            //两种写法一样
+            // 设置结束
+            // xAxis: {
+            //     type: 'time',
+            //     boundaryGap: false, // 取消左侧的间距
+            //     // data: ['2020-08-15 13:00:00', '2020-08-15 13:05:00', '2020-08-15 18:10:00', '2020-08-15 23:15:00']
+            //     data:[]
+            // },
+            xAxis: [{
+                //设置类别
+                type: 'category',
+                //数值起始和结束两端空白策略
+                boundaryGap: false,
+                // axisLine: {
+                //     lineStyle: {
+                //         type: 'solid',
+                //         color: '#fff',//左边线的颜色
+                //         width: '4'//坐标线的宽度
+                //     }
+                // },
+                // axisLabel: {
+                //     textStyle: {
+                //         color: '#fff'//x轴刻度数值颜色
+                //     }
+                // },
+                data: ['2020-08-15 13:00:00', '2020-08-15 13:05:00']
+            }],
+            yAxis: {
+                type: 'value',
+                splitLine: {
+                    show: false
+                },// 去除网格线
+                name: '',
+                axisLabel: {
+                    formatter: '{value}'   //设置Y轴，为Y轴添加℃
+                },
+            },
+            series: [{
+                name: '因子1',
+                type: 'line',
+                symbol: 'emptydiamond', // 设置折线图中表示每个坐标点的符号
+                // emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形
+                data: [40, 20, 35, 60, 55, 10]
+            }, {
+                name: '因子2',
+                type: 'line',
+                symbol: 'emptydiamond', // 设置折线图中表示每个坐标点的符号
+                // emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形
+                data: [10, 20, 35, 60, 55, 60]
+            }]
+        });
+        myTemperatureChart.showLoading(); // 数据加载完之前先显示一段简单的loading动画
+        var aaa = [];    //类别数组（实际用来盛放X轴坐标值）
+        var legendData = [];
+        var seriesArray = [];
+
+        //加载数据层
+        var indexs = layer.load(3);
+        $.ajax({
+            url: "monitor/data",
+            type: "POST",
+            data: {
+                pointId: pointId,
+                startTime: startTime,
+                endTime: endTime,
+                timeType: timeType,
+                limit:limit
+            },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+
+
+                if (data.jsonFlag == 1) {//里面有值
+                    console.log(data.data)
+                    if (data.data != null && data.data.length > 0) {
+                        //处理x轴时间
+                        for (var i = 0; i < data.data.length; i++) {//一行数据
+                            //
+                            var timeStr = "";//处理时间
+                            if (data.data[i].arrayofkeyvalue.k != null && data.data[i].arrayofkeyvalue.k != "") {
+                                var nian = data.data[i].arrayofkeyvalue.k.slice(0, 4);
+                                var yue = data.data[i].arrayofkeyvalue.k.slice(4, 6);
+                                var ri = data.data[i].arrayofkeyvalue.k.slice(6, 8);
+                                var shi = data.data[i].arrayofkeyvalue.k.slice(8, 10);
+                                var fen = data.data[i].arrayofkeyvalue.k.slice(10, 12);
+                                var miao = data.data[i].arrayofkeyvalue.k.slice(12, 14);
+                                timeStr = nian + "-" + yue + "-" + ri + " " + shi + ":" + fen + ":" + miao;
+                                console.log("时间" + timeStr)
+                                aaa.push(timeStr)
+                            }
+                        }
+                        //处理seriesArray和因子名称
+                        var objectLength = 0;//因子下标
+                        for (var k = 0; k < objectLength + 1; k++) {//objectLength+1 解决下标为0不能进入的问题
+
+                            var dataRtd = [];
+                            var map = "", arrB = [], colObjectB = "";
+                            for (var i = 0; i < data.data.length; i++) {//一行数据
+                                //
+                                if (data.data[i].arrayofkeyvalue.k != null && data.data[i].arrayofkeyvalue.k != "") {
+
+
+                                    //得到因子名称对象
+                                    var colObject = data.data[0].arrayofkeyvalue.v
+                                    colObjectB = colObject;
+                                    var colObjectKeyValue = data.data[i].arrayofkeyvalue.v
+                                    //转为数组
+                                    var arr = []
+                                    for (let i in colObjectKeyValue) {
+                                        arr.push(colObjectKeyValue[i]); //值
+                                    }
+                                    // arrB = arr;
+
+                                    objectLength = arr.length;
+
+                                    if (k < objectLength) {//解决一开始的问题，实质是<才能进入
+                                        dataRtd.push(arr[k].Rtd);
+
+                                    } else {
+                                        break;
+                                    }
+
+                                }
+
+                            }
+
+
+                            console.log(dataRtd)//每个因子对应的集合实时值
+
+                            if (dataRtd.length > 0) {
+                                console.log(colObjectB)
+                                var arrB = [];//把object转成数组
+                                for (let j in colObjectB) {
+                                    arrB.push(j); //因子名
+                                }
+
+                                for (var a = 0; a < arrB.length; a++) {
+                                    if (a == k) {
+                                        //   console.log("实时"+dataRtd)//因子名
+                                        console.log("因子名")
+                                        console.log(arrB[k])
+                                        var divisor = {
+                                            'name': arrB[k],
+                                            'type': 'line',
+                                            'symbol': 'emptydiamond', // 设置折线图中表示每个坐标点的符号
+                                            'data': dataRtd
+                                        };
+                                        legendData.push(arrB[k]);
+                                        seriesArray.push(divisor)
+                                    }
+
+                                }
+
+
+                            }
+                        }
+
+                        myTemperatureChart.hideLoading(); // 隐藏加载动画
+                        myTemperatureChart.setOption({ // 加载数据图表
+                            legend: {
+                                'data': legendData
+                            },
+                            //错误写法
+                            // xAxis: {
+                            //     data: aaa
+                            // },
+                            //正确写法
+                            xAxis: [
+                                {
+                                    type: 'category',
+                                    boundaryGap: false,
+                                    data: aaa
+                                }
+                            ],
+
+
+                            series: seriesArray
+
+
+                            //  series:  [{name: "烟气温度", type: "line", symbol: "emptydiamond",data:["17.9300","17.9300","17.9300","17.9300"]}
+                            // ,{name: "烟气流速", type: "line", symbol: "emptydiamond",data:["17.9300","17.9300","17.9300","17.9300"]}
+                            // ,{name: "烟气压力", type: "line", symbol: "emptydiamond",data:["17.9300","17.9300","17.9300","17.9300"]}
+                            //  ,{name: "废气", type: "line", symbol: "emptydiamond",data:["17.9300","17.9300","17.9300","17.9300"]}
+                            // ,{name: "烟气湿度", type: "line", symbol: "emptydiamond",data:["17.9300","17.9300","17.9300","17.9300"]}
+                            //  ,{name: "非甲烷总烃", type: "line", symbol: "emptydiamond",data:["17.9300","17.9300","17.9300","17.9300"]}]
+                        });
+                        console.log(myTemperatureChart)
+                    } else {
+                        layer.msg('没有查询到数据！', {offset: '150px', icon: 1});
+                        myTemperatureChart.hideLoading();
+                    }
+
+                } else {
+
+                    layer.msg('没有查询到数据！', {offset: '150px', icon: 1});
+                    myTemperatureChart.hideLoading();
+
+                }
+                myTemperatureChart.hideLoading();
+
+                //加载数据层关闭
+                layer.close(indexs);
+                return false;
+            }
+        });
+
+    }
+
+        //检索
+        function monitorDataSearchBtn() {
+            //显示表格
+            $("#monitorDataSearchDiv").attr("style", "display:block;");//显示div
+            //站点id
+            $("#monitorDataSearchHiddenPointId").val($("#monitorDataSearchHiddenPointId").val());
+
+            $("#monitorDataSearchHiddenCpage").val(1);
+            $("#monitorDataSearchHiddenTotalNum").val(-1);
+            monitorDataSearchSubmit();
+        }
+
+
+        //提交检索
+        function monitorDataSearchSubmit() {
+
+            //站点id
+            var pointId = $("#monitorDataSearchHiddenPointId").val();
+            //时间类型
+            var timeType = $("#rtdDataSearchTimeType").val();
+
+            //开始时间
+            var startTime = $("#rtdDataSearchStartTime").val();
+            //结束时间
+            var endTime = $("#rtdDataSearchEndTime").val();
+            console.log("时间类型" + timeType)
+            //当前页
+            var Cpage = $("#monitorDataSearchHiddenCpage").val();
+            //总条数
+            var totalNum = $("#monitorDataSearchHiddenTotalNum").val();
+
+            //加载数据层
+            var indexs = layer.load(3);
+            $.ajax({
+                    url: "monitor/data",
+                    type: "POST",
+                    data: {
+                        pointId: pointId,
+                        startTime: startTime,
+                        endTime: endTime,
+                        timeType: timeType,
+                        Cpage: Cpage,
+                        totalNum: totalNum
+                    },
+                    dataType: "json",
+                    async: false,
+                    success: function (data) {
+
+                        //渲染表格-行
+                        var strTable = "";
+                        //每页显示条数
+                        var intPageNum = "";
+                        //总共查询的条数
+                        var totalPageSize = "";
+                        $("#monitorDataSearchtbody").text(""); //先清空原先内容
+
+                        if (data.jsonFlag == 1) {//里面有值
+
+                            if (data.data != null && data.data.length > 0) {
+                                intPageNum = data.data[0].limit;
+                                totalPageSize = data.count;
+                                var colObject = data.data[0].arrayofkeyvalue.v
+
+                                var count = 0;
+                                //动态加载表头初始化
+                                $("#monitorDataSearchthead").text("");//先清空原先内容
+                                var thead = document.getElementById('monitorDataSearchthead');
+                                var tr = document.createElement("tr");//表头
+                                tr.innerHTML =
+                                    '<th lay-data="{field:\'k\', width:180}">时间</th>'
+
+                                for (var c in colObject) {//一行
+                                    count++;//记录因子数量(列段)
+                                    /*动态加载因子名称*/
+                                    //渲染表格表头
+                                    tr.innerHTML +=
+                                        // '<th lay-data="{field:\'' + c + '\', width:100 }" >' + ' <option th:each="sysDivisorSearch:${sysDivisorSearch}"   th:utext="${sysDivisorSearch.name}"  th:selected="' + c + ' eq ${sysDivisorSearch.code}"></option></th>'
+                                        '<th lay-data="{field:\'' + c + '\', width:100 }" >' + c + '</th>'
+                                }
+                                thead.appendChild(tr);
+
+
+                                for (var i = 0; i < data.data.length; i++) {//一行数据
+                                    strTable = strTable + "<tr>"
+
+                                    var time = "";//处理时间
+                                    if (data.data[i].arrayofkeyvalue.k != null && data.data[i].arrayofkeyvalue.k != "") {
+                                        var nian = data.data[i].arrayofkeyvalue.k.slice(0, 4);
+                                        var yue = data.data[i].arrayofkeyvalue.k.slice(4, 6);
+                                        var ri = data.data[i].arrayofkeyvalue.k.slice(6, 8);
+                                        var shi = data.data[i].arrayofkeyvalue.k.slice(8, 10);
+                                        var fen = data.data[i].arrayofkeyvalue.k.slice(10, 12);
+                                        var miao = data.data[i].arrayofkeyvalue.k.slice(12, 14);
+                                        time = nian + "-" + yue + "-" + ri + " " + shi + ":" + fen + ":" + miao;
+                                    }
+                                    if (data.data[i].arrayofkeyvalue.k != null && data.data[i].arrayofkeyvalue.k != "") {//分钟时间
+                                        strTable = strTable + "<td>" + time + "</td>";
+                                    } else {
+                                        strTable = strTable + "<td>-</td>";
+                                    }
+                                    var objectKeyvalue = data.data[i].arrayofkeyvalue.v;
+                                    if (data.data[i].flag != null && data.data[i].flag != "") {
+
+
+                                        if (data.data[i].flag.match("d2011")) {//判断为实时数据，显示对应的格式
+                                            for (var k in objectKeyvalue) {//一行
+                                                if (objectKeyvalue[k].Rtd != null && objectKeyvalue[k].Rtd != "") {//根据键-因子编码遍历值
+
+                                                    strTable = strTable + "<td>" + objectKeyvalue[k].Rtd + objectKeyvalue[k].Flag + "</td>";
+                                                } else {
+
+                                                    strTable = strTable + "<td>-</td>";
+                                                }
+                                            }
+                                        } else {//非实时数据
+                                            for (var k in objectKeyvalue) {//一行
+
+                                                if (objectKeyvalue[k].Avg != null && objectKeyvalue[k].Avg != "") {//根据键-因子编码遍历值
+
+                                                    strTable = strTable + "<td>" + objectKeyvalue[k].Avg + objectKeyvalue[k].Flag + "</td>";
+                                                } else {
+
+                                                    strTable = strTable + "<td>-</td>";
+                                                }
+                                            }
+                                        }
+                                    }
+                                    strTable = strTable + "</tr>"
+                                }
+
+
+                                $("#monitorDataSearchtbody").html(strTable);
+                            }
+
+                        } else {
+
+                            layer.msg('没有查询到数据！', {offset: '150px', icon: 1});
+                        }
+                        //显示表格
+                        layui.use(['table'], function () {
+                            var table = layui.table;
+                            //初始化表格
+                            table.init('monitorDataSearchTable', {
+                                height: 'full-230' //设置高度
+                                //, limit: intPageNum//
+                                //支持所有基础参数
+                                , page: false //是否分页
+
+                            });
+                        })
+                        //分页
+                        layui.use(['laypage'], function () {
+                            var laypage = layui.laypage;
+                            //初始化分页
+                            laypage.render({
+                                elem: 'monitorDataSearchPage'
+                                , count: totalPageSize
+                                , limit: intPageNum
+                                , curr: Cpage
+                                , layout: ['prev', 'page', 'next', 'count', 'skip']
+                                , jump: function (obj, first) {
+                                    if (!first) {
+                                        $("#monitorDataSearchHiddenCpage").val(obj.curr);
+                                        monitorDataSearchSubmit();
+                                    }
+                                }
+                            });
+                        })
+                        //加载数据层关闭
+                        layer.close(indexs);
+                        return false;
+                    }
+                }
+            )
+            ;
+
+
+        }
+</script>
+</body>
+</html>

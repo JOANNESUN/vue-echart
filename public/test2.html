@@ -1,0 +1,341 @@
+<style>
+
+    body {
+    background-color: #ebf6fc;
+}
+
+ #chart7, #chart8 {
+    height: 300px;
+}
+
+#chart7_, #chart8_ {
+    height: 300px;
+    display: none;
+    padding-top: 136px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.panel-title {
+    text-align: center;
+}
+</style>
+
+ 
+
+<div class="tab-content">
+                <div id="yl_4" class="tab-pane fade active in">
+
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">缴费年份</label>
+                            <div class="col-sm-3">
+                                <input type="text" id="jfnfyl" class="form-control"
+                                    readonly="readonly"
+                                    onFocus="WdatePicker({isShowClear:false,dateFmt:'yyyy',maxDate:'%y'})">
+                            </div>
+                            <button class="btn btn-mint" type="button" οnclick="searchYL();">
+                                <i class="glyphicon glyphicon-search"></i> 搜索
+                            </button>
+                        </div>
+                    </form>
+                    <div id="chart7"></div>
+                    <div id="chart7_">暂无数据</div>
+                </div>
+                <div id="yb_4" class="tab-pane fade">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">缴费年份</label>
+                            <div class="col-sm-3">
+                                <input type="text" id="jfnfyb" class="form-control"
+                                    readonly="readonly"
+                                    onFocus="WdatePicker({isShowClear:false,dateFmt:'yyyy',maxDate:'%y'})">
+                            </div>
+                            <button class="btn btn-mint" type="button" οnclick="searchYB();">
+                                <i class="glyphicon glyphicon-search"></i> 搜索
+                            </button>
+                        </div>
+                    </form>
+                    <div id="chart8"></div>
+                    <div id="chart8_">暂无数据</div>
+
+                </div>
+            </div>
+
+ 
+
+<script>
+
+ 
+
+var ylx=[];var yly=[];var ybx=[];var yby=[];
+        var myDate = new Date();
+        var year = myDate.getFullYear();
+        $('#jfnfyl').val(year);
+        $('#jfnfyb').val(year);
+        
+        $.ajax({ 
+            type : "get", 
+            url : ctx + "/admin/zklt/payInfo/getTrendYL",
+            data:{jfnfyl:$('#jfnfyl').val()},
+            dataType: "json",
+            success : function(result) {
+                
+                for(var i =0;i<result.length;i++){
+                    if(null == result[i].name){
+                        ylx.push("其他");
+                    }else{
+                        ylx.push(result[i].name);
+                    }
+                    
+                    yly.push(result[i].total);
+                }
+                
+                myChart7.hideLoading();
+                myChart7.setOption({
+                    xAxis:{
+                        data:ylx
+                    },
+                    series:[{
+                        data:yly
+                    }]
+                });
+               
+            },
+            error:function(){
+                alert("error");
+            }
+           }); 
+           
+           
+        $.ajax({ 
+            type : "get", 
+            url : ctx + "/admin/zklt/payInfo/getTrendYB",
+            data:{jfnfyb:$('#jfnfyb').val()},
+            dataType: "json",
+            success : function(data) {
+                
+                for(var i =0;i<data.length;i++){
+                   ybx.push(data[i].name);
+                   yby.push(data[i].total);
+                }
+                
+                myChart8.hideLoading();
+                myChart8.setOption({
+                    xAxis:{
+                        data:ybx
+                    },
+                    series:[{
+                        data:yby
+                    }]
+                });
+            },
+            error:function(){
+                alert("error");
+            }
+           });
+
+ 
+
+    var myChart7 = echarts.init(document.getElementById('chart7'));
+    var myChart8 = echarts.init(document.getElementById('chart8'));
+
+ 
+
+var option7 = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data:[],
+                    axisTick: {
+                        alignWithLabel: true
+                    },
+                    //设置字体倾斜
+                    axisLabel: {  
+                           interval:0,  
+                           rotate:40  
+                        } 
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '单位：人'
+                }
+            ],
+            series: [
+                {
+                    name: '养老',
+                    type: 'bar',
+                    // barWidth: '30%',
+                    data: []
+                }
+            ]
+        };
+        var option8 = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: [],
+                    axisTick: {
+                        alignWithLabel: true
+                    },
+                    axisLabel: {  
+                           interval:0,  
+                           rotate:40  
+                        } 
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '单位：人'
+                }
+            ],
+            series: [
+                {
+                    name: '医保',
+                    type: 'bar',
+                    // barWidth: '30%',
+                    data: []
+                }
+            ]
+        };
+
+ 
+
+    myChart7.setOption(option7);
+    myChart8.setOption(option8);
+    myChart7.showLoading();
+    myChart8.showLoading();
+
+ 
+
+    $('a[href="#yl_4"]').on('shown.bs.tab', function (e) {
+        e.preventDefault();
+        myChart7.resize();
+        myChart8.resize();
+    });
+    $('a[href="#yb_4"]').on('shown.bs.tab', function (e) {
+        e.preventDefault();
+        myChart7.resize();
+        myChart8.resize();
+    });
+
+ 
+
+    function searchYL(){
+        ylx.splice(0,ylx.length);
+        yly.splice(0,yly.length);
+        $.ajax({ 
+            type : "get", 
+            url : ctx + "/admin/zklt/payInfo/getTrendYL",
+            data:{jfnfyl:$('#jfnfyl').val()},
+            dataType: "json",
+            success : function(result) {
+                if(result.length == 0){
+                    //提示暂无数据
+                    $("#chart7").css({"display":"none"});
+                    $("#chart7_").css({"display":"block"});
+                }else{
+                    $("#chart7").css({"display":"block"});
+                    $("#chart7_").css({"display":"none"});
+                    for(var i =0;i<result.length;i++){
+                        if(null == result[i].name){
+                            ylx.push("其他");
+                        }else{
+                            ylx.push(result[i].name);
+                        }
+                        
+                        yly.push(result[i].total);
+                    }
+                    
+                    myChart7.hideLoading();
+                    myChart7.setOption({
+                        xAxis:{
+                            data:ylx
+                        },
+                        series:[{
+                            data:yly
+                        }]
+                    });
+                }
+            },
+            error:function(){
+                alert("error");
+            }
+           });
+    }
+    
+    function searchYB(){
+        ybx.splice(0,ybx.length);
+        yby.splice(0,yby.length);
+        $.ajax({ 
+            type : "get", 
+            url : ctx + "/admin/zklt/payInfo/getTrendYB",
+            data:{jfnfyb:$('#jfnfyb').val()},
+            dataType: "json",
+            success : function(data) {
+                if(data.length == 0){
+                    //提示暂无数据
+                    $("#chart8").css({"display":"none"});
+                    $("#chart8_").css({"display":"block"});
+                }else{
+                    $("#chart8").css({"display":"block"});
+                    $("#chart8_").css({"display":"none"});
+                    for(var i =0;i<data.length;i++){
+                           ybx.push(data[i].name);
+                           yby.push(data[i].total);
+                        }
+                        
+                        myChart8.hideLoading();
+                        myChart8.setOption({
+                            xAxis:{
+                                data:ybx
+                            },
+                            series:[{
+                                data:yby
+                            }]
+                        });
+                }
+            },
+            error:function(){
+                alert("error");
+            }
+           });
+    }
+
+ 
+
+ 
+
+ 
+
+</script>
+————————————————
+版权声明：本文为CSDN博主「iamlzjoco」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/iamlzyoco/article/details/94437693
