@@ -1,5 +1,7 @@
 <template>
+<div style="width:300px; height:auto">
  <div ref="pieChart" class="LoanAmountStatusContainer"></div>
+ </div>
 </template>
 
 <script>
@@ -53,5 +55,9 @@ mounted(){
 </script>
 
 <style>
+.LoanAmountStatusContainer {
+  width: 400px;
+  height: 300px;
+}
 
 </style>

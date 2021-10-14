@@ -1,5 +1,7 @@
 <template>
+<div style="width:300px; height:auto">
    <div ref="chart" class="LoanAmountUserContainer"></div>
+   </div>
 </template>
 
 <script>
@@ -104,5 +106,9 @@ mounted(){
 </script>
 
 <style>
+/* .LoanAmountUserContainer {
+  width: 400px;
+  height: 300px;
+} */
 
 </style>

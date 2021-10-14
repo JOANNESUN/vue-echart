@@ -1,5 +1,7 @@
 <template>
+<div style="width:300px; height:auto">
       <div ref="chart" class="LoanAvgSumContainer"></div>
+      </div>
 </template>
 
 <script>
@@ -91,5 +93,8 @@ export default {
 </script>
 
 <style>
-
+.LoanAvgSumContainer {
+  width: 400px;
+  height: 300px;
+}
 </style>

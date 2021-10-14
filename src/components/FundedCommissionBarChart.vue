@@ -1,5 +1,7 @@
 <template>
+<div style="width:300px; height:auto">
     <div ref="chart" class="FundedCommissionContainer"></div>
+</div>
 </template>
 
 <script>
@@ -97,5 +99,8 @@ export default {
 </script>
 
 <style>
-
+.FundedCommissionContainer {
+  width: 400px;
+  height: 300px;
+}
 </style>

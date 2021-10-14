@@ -1,5 +1,7 @@
 <template>
+<div style="width:300px; height:auto">
 <div ref="chart" class="LeadCountContainer"></div>
+</div>
 </template>
 
 <script>
@@ -40,7 +42,7 @@ mounted(){
 </script>
 
 <style>
-.container {
+.LeadCountContainer {
   width: 400px;
   height: 300px;
 }
